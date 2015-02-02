@@ -101,6 +101,7 @@ void terminal_discarduppermost()
 	{
 		terminal_buffer[i] = make_vgaentry(' ', terminal_color);
 	}
+	terminal_row -= 1;
 	return;
 }
  
@@ -110,6 +111,8 @@ void terminal_putchar(char c)
 	{
 		++terminal_row;
 		terminal_column = 0;
+		if(terminal_row == VGA_HEIGHT)
+			terminal_discarduppermost();
 		return;
 	}
 	terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
@@ -118,8 +121,8 @@ void terminal_putchar(char c)
 		terminal_column = 0;
 		if ( ++terminal_row == VGA_HEIGHT )
 		{
-			terminal_row = 0;
-			//terminal_discarduppermost();
+			//terminal_row = 0;
+			terminal_discarduppermost();
 			//terminal_row = VGA_HEIGHT - 1;
 		}
 	}
@@ -131,6 +134,8 @@ void terminal_writestring(const char* data)
 	for ( size_t i = 0; i < datalen; i++ )
 		terminal_putchar(data[i]);
 }
+
+uint8_t test_init = 'a';
  
 #if defined(__cplusplus)
 extern "C" /* Use C linkage for kernel_main. */
@@ -148,4 +153,13 @@ void kernel_main()
 		terminal_putchar('0'+number);
 		terminal_putchar('\n');
 	}
+	terminal_writestring("Test global variable value: test_init:\n");
+	terminal_putchar(test_init);
+	terminal_writestring("\n\'b\' means _init being called, otherwise not called\n");
+}
+
+__attribute__ ((constructor)) void foo(void)
+{
+	test_init = 'b';
+	return;
 }
