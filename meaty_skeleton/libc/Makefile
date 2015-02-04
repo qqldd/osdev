@@ -12,7 +12,7 @@ EXEC_PREFIX?=$(PREFIX)
 INCLUDEDIR?=$(PREFIX)/include
 LIBDIR?=$(EXEC_PREFIX)/lib
 
-CFLAGS:=$(CFLAGS) -Wall -Wextra
+CFLAGS:=$(CFLAGS) -Wall -Wextra -fstack-protector-all
 CPPFLAGS:=$(CPPFLAGS) -D__is_myos_libc -Iinclude
 LIBK_CFLAGS:=$(CFLAGS) -ffreestanding -fbuiltin
 LIBK_CPPFLAGS:=$(CPPFLAGS) -D__is_myos_kernel
@@ -28,10 +28,12 @@ LIBK_CPFLAGS:=$(LIBK_CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
 
 FREEOBJS:=\
 $(ARCH_FREEOBJS) \
+stack_chk_guard.o \
 stdio/printf.o \
 stdio/putchar.o \
 stdio/puts.o \
 stdlib/abort.o \
+stdlib/panic.o \
 string/memcmp.o \
 string/memcpy.o \
 string/memmove.o \
